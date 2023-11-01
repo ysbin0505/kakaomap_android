@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         }, new KakaoMapReadyCallback() {
+
             @Override
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
@@ -45,6 +46,14 @@ public class MainActivity extends AppCompatActivity {
                 // 지도 시작 시 확대/축소 줌 레벨 설정
                 return 20;
             }
+
+            @Override
+            public String getViewName() {
+                // KakaoMap 의 고유한 이름을 설정
+                return "PhotoSpot";
+            }
+
+
         });
     }
 }

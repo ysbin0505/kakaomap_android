@@ -26,6 +26,17 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="oauth"
+                    android:scheme="kakaoc48b3a64e5508a8c1c6c4ff591dfa478" />
+            </intent-filter>
+        </activity>
+
         <meta-data
             android:name="com.kakao.vectormap.APP_KEY"
             android:value="c48b3a64e5508a8c1c6c4ff591dfa478"/>
