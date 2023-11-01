@@ -1,6 +1,5 @@
 package com.example.spotapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -34,6 +33,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
+            }
+
+            @Override
+            public LatLng getPosition(){
+                return LatLng.from(35.2800, 128.4155); //함안
+            }
+
+            @Override
+            public int getZoomLevel() {
+                // 지도 시작 시 확대/축소 줌 레벨 설정
+                return 20;
             }
         });
     }
