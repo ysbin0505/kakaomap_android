@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onMapError(Exception error) {
-                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
+                // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출
             }
 
         }, new KakaoMapReadyCallback() {
