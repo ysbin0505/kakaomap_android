@@ -35,7 +35,8 @@ android {
 
 dependencies {
 
-    implementation("com.kakao.sdk:v2-user:2.10.0")
+    implementation("com.kakao.sdk:v2-all:2.17.0")
+    implementation("com.kakao.sdk:v2-user:2.17.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
     implementation ("com.kakao.maps.open:android:2.6.0")
