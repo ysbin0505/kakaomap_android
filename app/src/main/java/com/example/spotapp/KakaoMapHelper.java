@@ -5,8 +5,18 @@ import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapLifeCycleCallback;
 import com.kakao.vectormap.MapView;
+import com.kakao.vectormap.label.LabelStyle;
+import com.kakao.vectormap.label.LabelStyles;
 
 public class KakaoMapHelper {
+
+    private static double cur_lat;
+    private static double cur_lon;
+
+    public static void setCoordinates(double latitude, double longitude) {
+        cur_lat = latitude;
+        cur_lon = longitude;
+    }
 
     public static void initializeMap(MapView mapView) {
         mapView.start(new MapLifeCycleCallback() {
@@ -25,11 +35,13 @@ public class KakaoMapHelper {
             @Override
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
+                //LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(LabelStyle.from(LabelStyle.from(R.drawable.)))
+
             }
 
             @Override
             public LatLng getPosition() {
-                return LatLng.from(35.2800, 128.4155); // 함안
+                return LatLng.from(cur_lat, cur_lon); // 함안
             }
 
             @Override
