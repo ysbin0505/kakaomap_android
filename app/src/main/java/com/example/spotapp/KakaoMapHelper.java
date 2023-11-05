@@ -35,7 +35,7 @@ public class KakaoMapHelper {
             @Override
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
-                //LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(LabelStyle.from(LabelStyle.from(R.drawable.)))
+                //LabelStyles styles = kakaoMap.getLabelManager().addLabelStyles(LabelStyle.from(LabelStyle.from(R.drawable.)))//
 
             }
 
