@@ -14,6 +14,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,30 +23,33 @@ import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.kakao.sdk.auth.model.OAuthToken;
+import com.kakao.sdk.user.UserApiClient;
+import com.kakao.sdk.user.model.User;
 import com.kakao.vectormap.LatLng;
 import com.kakao.vectormap.MapView;
-import com.kakao.vectormap.label.TrackingManager;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
+import kotlin.jvm.functions.Function2;
 
 public class MainActivity extends AppCompatActivity {
 
     Fragment homeFragment;
     Fragment spotFragment;
     Fragment settingFragment;
+
     BottomNavigationView bottomNavigationView;
 
-    /*길찾기*/
+    /* 로그인 관련 */
+
     private MapView mapView;
     private Button showMapButton;
-    /*길찾기*/
 
-    /* 로그인 관련*/
+    private static final String TAG = "MainActivity";   //TAG
     private View loginButton, logoutButton;
     private TextView nickname;
     private ImageView profileImage;
-    private double cur_lat;
-    private double cur_lon;
-    /* 로그인 관련 */
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +57,53 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initLayout();
 
-        
+        MapView mapView = findViewById(R.id.map_view);
+        loginButton = findViewById(R.id.login);
+        logoutButton = findViewById(R.id.logout);
+        nickname = findViewById(R.id.nickname);
+        profileImage = findViewById(R.id.profile);
 
+        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
+            @Override
+            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
+                if (oAuthToken != null){
+                    //TBO
+                }
+                if (throwable != null){
+                    //TBO
+                }
+                updateKakaoLoginUi();
+                return null;
+            }
+        };
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this)) {
+                    UserApiClient.getInstance().loginWithKakaoTalk(MainActivity.this, callback);
+                }   else {
+                    UserApiClient.getInstance().loginWithKakaoAccount(MainActivity.this, callback);
+
+                }
+            }
+
+        });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>() {
+                    @Override
+                    public Unit invoke(Throwable throwable) {
+                        updateKakaoLoginUi();
+                        return null;
+                    }
+                });
+            }
+        });
+
+        updateKakaoLoginUi();
 
         /* 위치 관련 코드들 */
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
@@ -98,8 +147,31 @@ public class MainActivity extends AppCompatActivity {
 
         /* -- 위치 관련 코드들 끝 -- */
 
+    }
+
+    private void updateKakaoLoginUi() {
+        UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
+            @Override
+            public Unit invoke(User user, Throwable throwable) {
+                if (user != null){
+
+                    Log.i(TAG, "invoke : id = " + user.getId());
+                    Log.i(TAG, "invoke : id = " + user.getKakaoAccount().getProfile());
 
 
+
+                    loginButton.setVisibility(View.GONE);
+                    logoutButton.setVisibility(View.VISIBLE);
+
+                }else {
+
+                    loginButton.setVisibility(View.VISIBLE);
+                    logoutButton.setVisibility(View.GONE);
+
+                }
+                return null;
+            }
+        });
     }
 
     private void switchFragment(Fragment fragment) {
