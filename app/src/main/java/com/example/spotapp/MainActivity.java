@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         MapView mapView = findViewById(R.id.map_view);
         loginButton = findViewById(R.id.login);
         logoutButton = findViewById(R.id.logout);
-        nickname = findViewById(R.id.nickname);
         profileImage = findViewById(R.id.profile);
 
         Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
@@ -163,10 +162,14 @@ public class MainActivity extends AppCompatActivity {
                     loginButton.setVisibility(View.GONE);
                     logoutButton.setVisibility(View.VISIBLE);
 
+
+
                 }else {
 
                     loginButton.setVisibility(View.VISIBLE);
                     logoutButton.setVisibility(View.GONE);
+
+
 
                 }
                 return null;

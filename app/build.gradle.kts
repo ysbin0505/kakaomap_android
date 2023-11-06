@@ -35,6 +35,8 @@ android {
 
 dependencies {
 
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.kakao.sdk:v2-all:2.17.0")
     implementation("com.kakao.sdk:v2-user:2.17.0")
     implementation("androidx.appcompat:appcompat:1.6.1")

@@ -1,6 +1,7 @@
 package com.example.spotapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -90,9 +91,15 @@ public class SpotFragment extends Fragment {
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
 
-                // 라벨 생성
+                /**
+                 * 라벨 생성
+                 * 0~4까지 blue 마커, 5~16까지도 블루마커, 17~끝까지 cur_pos로
+                 */
                 LabelStyles styles = kakaoMap.getLabelManager()
-                        .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.cur_pos)));
+                        .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.blue_marker).setZoomLevel(0),
+                                LabelStyle.from(R.drawable.blue_marker).setTextStyles(15, Color.BLACK).setZoomLevel(5),
+                                LabelStyle.from(R.drawable.cur_pos).setZoomLevel(17)));
+
                 LabelOptions options = LabelOptions.from(LatLng.from(latitude,longitude))
                         .setStyles(styles);
                 LabelLayer layer = kakaoMap.getLabelManager().getLayer();
