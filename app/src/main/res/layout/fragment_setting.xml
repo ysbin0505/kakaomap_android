@@ -1,35 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SettingFragment">
+    android:layout_height="match_parent">
 
-
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_gravity="center">
+        android:layout_height="match_parent"
+        tools:context=".SettingFragment">
 
-        <ImageView
-            android:id="@+id/profileImageView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="centerCrop"
-            android:layout_gravity="center"
-            android:visibility="gone"/> <!-- 기본적으로 숨기기 -->
-
-        <TextView
-            android:id="@+id/nicknameTextView"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textColor="#000000"
-            android:textSize="20sp"
-            android:visibility="gone"/> <!-- 기본적으로 숨기기 -->
+            android:orientation="vertical"
+            android:layout_gravity="center">
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/profileImageView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center"
+                android:visibility="gone"/> <!-- 기본적으로 숨기기 -->
 
-</FrameLayout>
+            <TextView
+                android:id="@+id/nicknameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:visibility="gone"/> <!-- 기본적으로 숨기기 -->
+
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/settingsButton"
+            android:layout_width="99dp"
+            android:layout_height="99dp"
+            android:layout_gravity="end|top"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="0dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_setting"
+            tools:ignore="SpeakableTextPresentCheck" />
+
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

@@ -17,9 +17,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
@@ -27,7 +24,6 @@ import com.kakao.sdk.auth.model.OAuthToken;
 import com.kakao.sdk.user.UserApiClient;
 import com.kakao.sdk.user.model.User;
 import com.kakao.vectormap.LatLng;
-import com.kakao.vectormap.MapView;
 
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -35,75 +31,33 @@ import kotlin.jvm.functions.Function2;
 
 public class MainActivity extends AppCompatActivity {
 
-    Fragment homeFragment;
-    Fragment spotFragment;
-    Fragment settingFragment;
-
+    Fragment homeFragment, spotFragment, settingFragment;
     BottomNavigationView bottomNavigationView;
 
     /* 로그인 관련 */
 
-    private MapView mapView;
-    private Button showMapButton;
-
     private static final String TAG = "MainActivity";   //TAG
     private View loginButton, logoutButton;
-    private TextView nickname;
-    private ImageView profileImage;
+
+    public View getLoginButton(){
+        return loginButton;
+    }
+
+    public View getLogoutButton(){
+        return logoutButton;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initLayout();
 
-        MapView mapView = findViewById(R.id.map_view);
-        loginButton = findViewById(R.id.login);
-        logoutButton = findViewById(R.id.logout);
-        profileImage = findViewById(R.id.profile);
+        initLayout();   //하단바
+        updateKakaoLoginUi();   //카카오 로그인UI
+        checkLocationPermission();  //위치정보
+    }
 
-        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
-            @Override
-            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                if (oAuthToken != null){
-                    //TBO
-                }
-                if (throwable != null){
-                    //TBO
-                }
-                updateKakaoLoginUi();
-                return null;
-            }
-        };
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this)) {
-                    UserApiClient.getInstance().loginWithKakaoTalk(MainActivity.this, callback);
-                }   else {
-                    UserApiClient.getInstance().loginWithKakaoAccount(MainActivity.this, callback);
-
-                }
-            }
-
-        });
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>() {
-                    @Override
-                    public Unit invoke(Throwable throwable) {
-                        updateKakaoLoginUi();
-                        return null;
-                    }
-                });
-            }
-        });
-
-        updateKakaoLoginUi();
-
+    private void checkLocationPermission() {
         /* 위치 관련 코드들 */
         int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
         if(permissionCheck == PackageManager.PERMISSION_DENIED){ //위치 권한 확인
@@ -129,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                 if(SpotFragment.getCurLabel() != null) // SpotFragment로 이동한 적이 없으면 curLabel이 null이라 예외 터짐 방지
                     SpotFragment.getCurLabel().moveTo(LatLng.from(latitude, longitude));
 
-                // 위도와 경도를 사용하여 현재 위치를 처리합니다.
+                // 위도와 경도를 사용하여 현재 위치를 처리.
             }
 
             // 다른 메서드들 (onStatusChanged, onProviderEnabled, onProviderDisabled)도 구현 가능합니다.
@@ -148,34 +102,83 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private void updateKakaoLoginUi() {
+
+        if (loginButton == null || logoutButton == null) {
+            loginButton = findViewById(R.id.login);
+            logoutButton = findViewById(R.id.logout);
+        }
+
+        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
+            @Override
+            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
+                if (oAuthToken != null) {
+                    // TBO
+                }
+                if (throwable != null) {
+                    // TBO
+                }
+                // 카카오 로그인 상태에 따라 UI 업데이트
+                updateKakaoLoginStatus(UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this));
+                return null;
+            }
+        };
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this)) {
+                    UserApiClient.getInstance().loginWithKakaoTalk(MainActivity.this, callback);
+                } else {
+                    UserApiClient.getInstance().loginWithKakaoAccount(MainActivity.this, callback);
+                }
+            }
+        });
+
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>() {
+                    @Override
+                    public Unit invoke(Throwable throwable) {
+                        // 로그아웃 후 UI 업데이트
+                        updateKakaoLoginStatus(false);
+                        return null;
+                    }
+                });
+            }
+        });
+
         UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
             @Override
             public Unit invoke(User user, Throwable throwable) {
-                if (user != null){
-
+                // 사용자 정보 받아오기 성공 시 UI 업데이트
+                if (user != null) {
                     Log.i(TAG, "invoke : id = " + user.getId());
                     Log.i(TAG, "invoke : id = " + user.getKakaoAccount().getProfile());
-
-
-
-                    loginButton.setVisibility(View.GONE);
-                    logoutButton.setVisibility(View.VISIBLE);
-
-
-
-                }else {
-
-                    loginButton.setVisibility(View.VISIBLE);
-                    logoutButton.setVisibility(View.GONE);
-
-
-
+                    updateKakaoLoginStatus(true);
+                } else {
+                    // 사용자 정보 받아오기 실패 시 UI 업데이트
+                    updateKakaoLoginStatus(false);
                 }
                 return null;
             }
         });
     }
+
+    private void updateKakaoLoginStatus(boolean isLoggedIn) {
+        if (loginButton != null && logoutButton != null) {
+            if (isLoggedIn) {
+                loginButton.setVisibility(View.GONE);
+                logoutButton.setVisibility(View.VISIBLE);
+            } else {
+                loginButton.setVisibility(View.VISIBLE);
+                logoutButton.setVisibility(View.GONE);
+            }
+        }
+    }
+
 
     private void switchFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -183,16 +186,15 @@ public class MainActivity extends AppCompatActivity {
         transaction.addToBackStack(null);
         transaction.commit();
     }
+
+
     private void initLayout() {
-
-
         /* 하단 바 레이아웃 관련 코드들 */
         homeFragment = new HomeFragment();
         spotFragment = new SpotFragment();
         settingFragment = new SettingFragment();
         switchFragment(homeFragment);
         bottomNavigationView = findViewById(R.id.bottom_navigation);
-
 
         bottomNavigationView.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -215,4 +217,5 @@ public class MainActivity extends AppCompatActivity {
         /* 하단 바 레이아웃 관련 코드들 끝 */
 
     }
+
 }
