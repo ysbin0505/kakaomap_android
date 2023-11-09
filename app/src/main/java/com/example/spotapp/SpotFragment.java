@@ -59,9 +59,21 @@ public class SpotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_spot, container, false);
+
+        // 카카오 로그인 버튼과 로그아웃 버튼 숨기기
+        MainActivity mainActivity = (MainActivity) getActivity();
+        //버튼 숨기기
+        View loginButton = mainActivity.getLoginButton();
+        View logoutButton = mainActivity.getLogoutButton();
+        if (loginButton != null) {
+            loginButton.setVisibility(View.GONE);
+        }
+        if (logoutButton != null) {
+            logoutButton.setVisibility(View.GONE);
+        }
+        //
         MapView mapView = view.findViewById(R.id.map_view);
         showMapButton = view.findViewById(R.id.show_map_button);
-
         showMapButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
