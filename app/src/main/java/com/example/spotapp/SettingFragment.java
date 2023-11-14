@@ -24,6 +24,12 @@ public class SettingFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void setSwipeRefreshLayout(SwipeRefreshLayout swipeRefreshLayout) {
+        this.swipeRefreshLayout = swipeRefreshLayout;
+    }
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -76,6 +82,7 @@ public class SettingFragment extends Fragment {
                     String nickname = user.getKakaoAccount().getProfile().getNickname();
                     String profileImageUrl = user.getKakaoAccount().getProfile().getProfileImageUrl();
 
+
                     // 닉네임 설정
                     nicknameTextView.setText(nickname);
 
@@ -109,5 +116,8 @@ public class SettingFragment extends Fragment {
 
     private void kakaoProfile() {
 
+
     }
+
+
 }
