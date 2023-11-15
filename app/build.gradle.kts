@@ -35,6 +35,9 @@ android {
 
 dependencies {
 
+    implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.12.0")
     implementation("com.kakao.sdk:v2-all:2.17.0")
     implementation("com.kakao.sdk:v2-user:2.17.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -44,6 +47,13 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+
+    //retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.6.4")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.4")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
+    implementation ("com.google.code.gson:gson:2.8.6")
+    implementation ("com.squareup.okhttp3:logging-interceptor:3.11.0")
 
 
 }

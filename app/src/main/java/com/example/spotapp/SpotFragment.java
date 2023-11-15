@@ -1,6 +1,7 @@
 package com.example.spotapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -58,9 +59,21 @@ public class SpotFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_spot, container, false);
+
+        // 카카오 로그인 버튼과 로그아웃 버튼 숨기기
+        MainActivity mainActivity = (MainActivity) getActivity();
+        //버튼 숨기기
+        View loginButton = mainActivity.getLoginButton();
+        View logoutButton = mainActivity.getLogoutButton();
+        if (loginButton != null) {
+            loginButton.setVisibility(View.GONE);
+        }
+        if (logoutButton != null) {
+            logoutButton.setVisibility(View.GONE);
+        }
+        //
         MapView mapView = view.findViewById(R.id.map_view);
         showMapButton = view.findViewById(R.id.show_map_button);
-
         showMapButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
@@ -90,9 +103,15 @@ public class SpotFragment extends Fragment {
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
 
-                // 라벨 생성
+                /**
+                 * 라벨 생성
+                 * 0~4까지 blue 마커, 5~16까지도 블루마커, 17~끝까지 cur_pos로
+                 */
                 LabelStyles styles = kakaoMap.getLabelManager()
-                        .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.cur_pos)));
+                        .addLabelStyles(LabelStyles.from(LabelStyle.from(R.drawable.blue_marker).setZoomLevel(0),
+                                LabelStyle.from(R.drawable.blue_marker).setTextStyles(15, Color.BLACK).setZoomLevel(5),
+                                LabelStyle.from(R.drawable.cur_pos).setZoomLevel(17)));
+
                 LabelOptions options = LabelOptions.from(LatLng.from(latitude,longitude))
                         .setStyles(styles);
                 LabelLayer layer = kakaoMap.getLabelManager().getLayer();
