@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
 
     /*서버 통신*/
-    private static final String BASE_URL = "http://10.0.2.2:8080";
+    private static final String BASE_URL = "http://10.0.2.2:8080/";
     private RetrofitService retrofitService;
 
 
