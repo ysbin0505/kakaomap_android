@@ -34,20 +34,20 @@
         />
 
     <ImageView
-        android:id="@+id/button_login"
+        android:id="@+id/login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="카카오 로그인"
         android:src="@drawable/kakao_login_medium_narrow"
-        android:visibility="gone"/>
+        android:text="카카오 로그인"
+        android:visibility="visible" />
 
     <Button
-        android:id="@+id/button_logout"
+        android:id="@+id/logout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="로그아웃"
         android:padding="16dp"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
 
 </LinearLayout>
