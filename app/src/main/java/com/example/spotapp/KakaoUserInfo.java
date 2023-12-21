@@ -2,10 +2,12 @@ package com.example.spotapp;
 
 public class KakaoUserInfo {
     private String kakaoUserName;
-    private String kakaoUserProfile;
-
-    public KakaoUserInfo(String kakaoUserName, String kakaoUserProfile) {
+    public KakaoUserInfo(String kakaoUserName){
         this.kakaoUserName = kakaoUserName;
-        this.kakaoUserProfile = kakaoUserProfile;
+    }
+
+    public String getKakaoUserName(){
+        return kakaoUserName;
     }
 }
+

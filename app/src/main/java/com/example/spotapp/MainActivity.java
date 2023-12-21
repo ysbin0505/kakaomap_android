@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initLayout();   //하단바
-        updateKakaoLoginUi();   //카카오 로그인UI
         checkLocationPermission();  //위치정보
     }
 
@@ -104,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 // 위도와 경도를 사용하여 현재 위치를 처리.
             }
 
-            // 다른 메서드들 (onStatusChanged, onProviderEnabled, onProviderDisabled)도 구현 가능합니다.
+            // 다른 메서드들 (onStatusChanged, onProviderEnabled, onProviderDisabled)도 구현 가능
         };
 
         // 주기적인 위치 업데이트 등록
@@ -119,126 +118,6 @@ public class MainActivity extends AppCompatActivity {
         /* -- 위치 관련 코드들 끝 -- */
 
     }
-
-
-    private void updateKakaoLoginUi() {
-
-        if (loginButton == null || logoutButton == null) {
-            loginButton = findViewById(R.id.login);
-            logoutButton = findViewById(R.id.logout);
-        }
-
-        Function2<OAuthToken, Throwable, Unit> callback = new Function2<OAuthToken, Throwable, Unit>() {
-            @Override
-            public Unit invoke(OAuthToken oAuthToken, Throwable throwable) {
-                if (oAuthToken != null) {
-                    // TBO
-                }
-                if (throwable != null) {
-                    // TBO
-                }
-                // 카카오 로그인 상태에 따라 UI 업데이트
-                updateKakaoLoginStatus(UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this));
-                return null;
-            }
-        };
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (UserApiClient.getInstance().isKakaoTalkLoginAvailable(MainActivity.this)) {
-                    UserApiClient.getInstance().loginWithKakaoTalk(MainActivity.this, callback);
-                } else {
-                    UserApiClient.getInstance().loginWithKakaoAccount(MainActivity.this, callback);
-                }
-            }
-        });
-
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                UserApiClient.getInstance().logout(new Function1<Throwable, Unit>() {
-                    @Override
-                    public Unit invoke(Throwable throwable) {
-                        // 로그아웃 후 UI 업데이트
-                        updateKakaoLoginStatus(false);
-                        return null;
-                    }
-                });
-            }
-        });
-
-        UserApiClient.getInstance().me(new Function2<User, Throwable, Unit>() {
-            @Override
-            public Unit invoke(User user, Throwable throwable) {
-                // 사용자 정보 받아오기 성공 시 UI 업데이트
-                if (user != null) {
-                    /**
-                     * 서버로 보내기
-                     */
-                    String kakaoUserName = user.getKakaoAccount().getProfile().getNickname();
-                    String kakaoUserProfile= user.getKakaoAccount().getProfile().getProfileImageUrl();
-                    //서버로 데이터 보내기
-                    sendKakaoUserInfoToServer(kakaoUserName, kakaoUserProfile);
-
-                    Log.i(TAG, "User Nickname: " + kakaoUserName);
-                    Log.i(TAG, "User Profile Image URL: " + kakaoUserProfile);
-
-                    Log.i(TAG, "invoke : id = " + user.getId());
-                    Log.i(TAG, "invoke : id = " + user.getKakaoAccount().getProfile());
-
-                    updateKakaoLoginStatus(true);
-                } else {
-                    // 사용자 정보 받아오기 실패 시 처리
-                    Log.e(TAG, "Failed to get user information");
-                    // 사용자 정보 받아오기 실패 시 UI 업데이트
-                    updateKakaoLoginStatus(false);
-                }
-                return null;
-            }
-
-            private void sendKakaoUserInfoToServer(String kakaoUserName, String kakaoUserProfile) {
-                Gson gson = new GsonBuilder().setLenient().create();
-                Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                        .addConverterFactory(ScalarsConverterFactory.create())
-                        .addConverterFactory(GsonConverterFactory.create(gson)).client(new OkHttpClient()).build();
-                retrofitService = retrofit.create(RetrofitService.class);
-
-                KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(kakaoUserName, kakaoUserProfile);
-
-                Call<String> call = retrofitService.saveKakaoUserInfo(kakaoUserInfo);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        if (response.isSuccessful()){
-                            Log.d("API", "Data sent successfully");
-                        } else {
-                            Log.e("API", "Failed to send data");
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        //통신 실패 시 처리
-                        Log.e("API", "Network Error : " + t.getMessage());
-                    }
-                });
-            }
-        });
-    }
-
-    private void updateKakaoLoginStatus(boolean isLoggedIn) {
-        if (loginButton != null && logoutButton != null) {
-            if (isLoggedIn) {
-                loginButton.setVisibility(View.GONE);
-                logoutButton.setVisibility(View.VISIBLE);
-            } else {
-                loginButton.setVisibility(View.VISIBLE);
-                logoutButton.setVisibility(View.GONE);
-            }
-        }
-    }
-
 
     private void switchFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
