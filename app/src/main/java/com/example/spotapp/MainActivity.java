@@ -101,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
                     SpotFragment.getCurLabel().moveTo(LatLng.from(latitude, longitude));
 
                 // 위도와 경도를 사용하여 현재 위치를 처리.
+
+                Log.i("MainActivity", "Latitude: " + latitude + ", Longitude: " + longitude);
+
             }
 
             // 다른 메서드들 (onStatusChanged, onProviderEnabled, onProviderDisabled)도 구현 가능
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             // GPS로부터 위치 업데이트를 요청합니다.
             // 500ms마다 위치 업데이트 요청 보냄.
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, locationListener);
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 500, 0, locationListener);
         } catch (SecurityException e) {
             e.printStackTrace();
         }

@@ -7,6 +7,7 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,6 +104,7 @@ public class SpotFragment extends Fragment {
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
 
+
                 /**
                  * 라벨 생성
                  * 0~4까지 blue 마커, 5~16까지도 블루마커, 17~끝까지 cur_pos로
@@ -121,6 +123,9 @@ public class SpotFragment extends Fragment {
                 // 라벨 추적
                 TrackingManager trackingManager = kakaoMap.getTrackingManager();
                 trackingManager.startTracking(label);
+
+                // 위치 정보 로그 출력
+                Log.i("SpotFragment", "Latitude: " + latitude + ", Longitude: " + longitude);
             }
 
             @Override
