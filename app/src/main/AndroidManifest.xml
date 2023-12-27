@@ -31,6 +31,14 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".LabelContext"
+            android:label="YourLabel"
+            android:theme="@style/Theme.SpotApp">
+            <!-- 다른 설정들... -->
+        </activity>
+
+
         <!-- 로그인-->
         <activity android:name="com.kakao.sdk.auth.AuthCodeHandlerActivity"
             android:exported="true">
