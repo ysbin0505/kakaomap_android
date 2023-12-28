@@ -31,6 +31,7 @@ import com.kakao.vectormap.label.TrackingManager;
 
 public class SpotFragment extends Fragment {
 
+    private static final String BASE_URL = "http://210.123.182.64:8080/"; // "http://10.0.2.2:8080/" virtual // "http://172.25.80.1:8080/"
     private Button showMapButton;
     private Button mylocallAdd;
     private static double longitude;
@@ -169,17 +170,19 @@ public class SpotFragment extends Fragment {
                 marker.setClickable(true);
                 Toast.makeText(getContext(), "마커가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
 
-                Log.d("SpotFragment", "Label 클릭 이벤트 발생, Intent를 통한 화면 전환 시작");
+                Log.d("SpotFragment", "이벤트 호출 시작");
 
                 Intent intent = new Intent(getActivity(), LabelContext.class);
 
-                // 필요한 정보를 Intent에 추가해야 함
+                intent.putExtra("latitude", label.getPosition().latitude);
+                intent.putExtra("longitude", label.getPosition().longitude);
 
                 try {
+                    Log.d("SpotFragment", "성공");
+                    Log.d("SpotFragment", "Latitude: " + label.getPosition().latitude + " Longitude " + label.getPosition().longitude);
                     startActivity(intent);
-                    Log.d("SpotFragment", "Intent를 통한 화면 전환 성공");
                 } catch (Exception e) {
-                    Log.e("SpotFragment", "Intent를 통한 화면 전환 실패: " + e.getMessage());
+                    Log.e("SpotFragment", "실패: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
