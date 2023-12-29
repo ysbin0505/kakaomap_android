@@ -1,8 +1,10 @@
 package com.example.spotapp;
 
 import android.location.Location;
+import android.location.LocationRequest;
 
 import com.example.spotapp.client.ApiResponse;
+import com.example.spotapp.client.LocationData;
 
 import java.util.List;
 
@@ -20,10 +22,6 @@ public interface RetrofitService {
                                    @Header("Authorization") String authorizationHeader,
                                    @Body String nickname);
 
-    @GET("/locations")
-    Call<ApiResponse<List<Location>>> getLocations(
-            @Query("latitude") Double latitude,
-            @Query("longitude") Double longitude
-    );
-
+    @POST("/locations/save")
+    Call<Void> addLocation(@Body LocationData locationData);
 }

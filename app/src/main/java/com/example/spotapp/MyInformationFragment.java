@@ -191,7 +191,6 @@ public class MyInformationFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create(gson)).client(new OkHttpClient()).build();
         retrofitService = retrofit.create(RetrofitService.class);
 
-        KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(kakaoUserName);
         String authorizationHeader = oauthToken;
         System.out.println("제발나와라 : " + userId);
         Call<String> call = retrofitService.saveKakaoUserInfo(userId ,authorizationHeader, kakaoUserName);
