@@ -4,12 +4,22 @@ public class LocationData {
     private Double latitude;
     private Double longitude;
     private String title;
+    private String address;
     private String description;
 
-    public LocationData(Double latitude, Double longitude, String title, String description) {
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public LocationData(Double latitude, Double longitude, String title, String address, String description) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.title = title;
+        this.address = address;
         this.description = description;
     }
 
