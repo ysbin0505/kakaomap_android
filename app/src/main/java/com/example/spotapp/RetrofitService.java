@@ -24,4 +24,9 @@ public interface RetrofitService {
 
     @POST("/locations/save")
     Call<Void> addLocation(@Body LocationData locationData);
+
+    @GET("/locations") // 실제 API 엔드포인트에 따라 수정
+    Call<List<LocationData>> getLocations();
+
+
 }

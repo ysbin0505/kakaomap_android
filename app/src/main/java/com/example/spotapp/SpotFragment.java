@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.spotapp.client.LocationData;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.kakao.vectormap.KakaoMap;
 import com.kakao.vectormap.KakaoMapReadyCallback;
 import com.kakao.vectormap.LatLng;
@@ -29,9 +32,22 @@ import com.kakao.vectormap.label.LabelStyle;
 import com.kakao.vectormap.label.LabelStyles;
 import com.kakao.vectormap.label.TrackingManager;
 
+import java.util.List;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
+
 public class SpotFragment extends Fragment {
 
     private static final String BASE_URL = "http://210.123.182.64:8080/"; // "http://10.0.2.2:8080/" virtual // "http://172.25.80.1:8080/"
+
+    private RetrofitService retrofitService;
+    private KakaoMap kakaoMap;
     private Button showMapButton;
     private Button mylocallAdd;
     private static double longitude;
@@ -99,6 +115,11 @@ public class SpotFragment extends Fragment {
             public void onMapReady(KakaoMap kakaoMap) {
                 // 인증 후 API 가 정상적으로 실행될 때 호출됨
 
+                SpotFragment.this.kakaoMap = kakaoMap; // kakaoMap을 전역 변수에 저장
+                //서버에서 마커 받아오기
+                fetchDataFromServer();
+
+
                 // 현재 위치에 마커 추가
                 mylocallAdd = view.findViewById(R.id.mylocalAdd);
                 mylocallAdd.setOnClickListener(new View.OnClickListener() {
@@ -145,6 +166,66 @@ public class SpotFragment extends Fragment {
         // Inflate the layout for this fragment
         return view;
     }
+
+    private void fetchDataFromServer() {
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .client(new OkHttpClient())
+                .build();
+        retrofitService = retrofit.create(RetrofitService.class);
+
+        Call<List<LocationData>> call = retrofitService.getLocations();
+        call.enqueue(new Callback<List<LocationData>>() {
+            @Override
+            public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<LocationData> locationList = response.body();
+                    Log.d("마커 불러오기", "성공 : " + locationList.size() + " locations");
+                    displayMarkers(kakaoMap, locationList);
+                } else {
+                    // 서버 응답이 실패했을 때의 처리
+                    Log.e("마커 불러오기", "실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LocationData>> call, Throwable t) {
+                // 네트워크 오류 또는 서버 응답이 실패했을 때의 처리
+                Log.e("마커 불러오기", "에러 : " + t.getMessage());
+            }
+        });
+    }
+
+    private void displayMarkers(KakaoMap kakaoMap, List<LocationData> locationList) {
+        if (kakaoMap == null) {
+            Log.e("SpotFragment", "KakaoMap is null");
+            return;
+        }
+
+        // 서버에서 받아온 데이터를 사용하여 지도에 마커 표시
+        for (LocationData location : locationList) {
+            // 각 LocationData에서 위도와 경도를 가져와서 LatLng 객체 생성
+            LatLng currentLocation = LatLng.from(location.getLatitude(), location.getLongitude());
+
+            // 마커 스타일 설정
+            LabelStyle markerStyle = LabelStyle.from(R.drawable.blue_marker)
+                    .setTextStyles(15, Color.BLACK);
+
+            // 마커 옵션 설정
+            LabelOptions markerOptions = LabelOptions.from(currentLocation)
+                    .setStyles(markerStyle);
+
+            // 마커 레이어 가져오기
+            LabelLayer markerLayer = kakaoMap.getLabelManager().getLayer();
+
+            // 마커 추가
+            Label marker = markerLayer.addLabel(markerOptions);
+        }
+    }
+
 
     private void addMarkerToCurrentLocation(KakaoMap kakaoMap) {
         // 현재 위치에 마커를 추가하기 위해 LatLng 객체 생성

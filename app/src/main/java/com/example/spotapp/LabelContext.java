@@ -2,6 +2,7 @@ package com.example.spotapp;
 
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +26,15 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.kakao.sdk.user.UserApiClient;
+import com.kakao.vectormap.KakaoMap;
+import com.kakao.vectormap.LatLng;
+import com.kakao.vectormap.label.Label;
+import com.kakao.vectormap.label.LabelLayer;
+import com.kakao.vectormap.label.LabelOptions;
+import com.kakao.vectormap.label.LabelStyle;
 
+
+import java.util.List;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
@@ -89,9 +98,10 @@ public class LabelContext extends AppCompatActivity {
                 EditText contentEditText = findViewById(R.id.text);
                 String title = titleEditText.getText().toString();
                 String description = contentEditText.getText().toString();
+                String address = "null";
 
                 // LocationData 객체 생성
-                LocationData locationData = new LocationData(latitude, longitude, title, description);
+                LocationData locationData = new LocationData(latitude, longitude, title, address, description);
 
                 // Retrofit을 사용하여 서버로 POST 요청 보내기
                 Call<Void> call = retrofitService.addLocation(locationData);
