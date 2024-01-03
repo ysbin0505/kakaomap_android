@@ -9,6 +9,10 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
+    <!-- 이미지 파일 관련 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
 
     <application
         android:usesCleartextTraffic="true"
@@ -19,6 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.SpotApp"
         android:name=".KakaoApplication"
         tools:targetApi="31">
@@ -33,6 +38,13 @@
 
         <activity
             android:name=".LabelContext"
+            android:label="YourLabel"
+            android:theme="@style/Theme.SpotApp">
+            <!-- 다른 설정들... -->
+        </activity>
+
+        <activity
+            android:name=".LabelDBContext"
             android:label="YourLabel"
             android:theme="@style/Theme.SpotApp">
             <!-- 다른 설정들... -->

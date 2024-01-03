@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.spotapp.client.ApiResponse;
 import com.example.spotapp.client.LocationData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -44,7 +45,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class SpotFragment extends Fragment {
 
-    private static final String BASE_URL = "http://210.123.182.64:8080/"; // "http://10.0.2.2:8080/" virtual // "http://172.25.80.1:8080/"
+    private static final String BASE_URL = "http://192.168.239.152:8080/"; //home "http://210.123.182.64:8080/"; // "http://10.0.2.2:8080/" virtual // "http://172.25.80.1:8080/"
 
     private RetrofitService retrofitService;
     private KakaoMap kakaoMap;
@@ -177,7 +178,31 @@ public class SpotFragment extends Fragment {
                 .build();
         retrofitService = retrofit.create(RetrofitService.class);
 
-        Call<List<LocationData>> call = retrofitService.getLocations();
+        //@@@@@@@@@@@
+        Call<ApiResponse<List<LocationData>>> calls = retrofitService.getLocations(latitude, longitude);
+        calls.enqueue(new Callback<ApiResponse<List<LocationData>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<LocationData>>> call, Response<ApiResponse<List<LocationData>>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    ApiResponse<List<LocationData>> apiResponse = response.body();
+                    List<LocationData> locationList = apiResponse.getData();
+                    Log.d("마커 불러오기", "성공 : " + locationList.size() + " locations");
+                    displayMarkers(kakaoMap, locationList);
+                } else {
+                    // 서버 응답이 실패했을 때의 처리
+                    Log.e("마커 불러오기", "실패");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<LocationData>>> call, Throwable t) {
+                // 네트워크 오류 또는 서버 응답이 실패했을 때의 처리
+                Log.e("마커 불러오기", "에러 : " + t.getMessage());
+            }
+        });
+
+        //@@@@@@@@@@@
+        /*Call<List<LocationData>> call = retrofitService.getLocations();
         call.enqueue(new Callback<List<LocationData>>() {
             @Override
             public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
@@ -196,7 +221,7 @@ public class SpotFragment extends Fragment {
                 // 네트워크 오류 또는 서버 응답이 실패했을 때의 처리
                 Log.e("마커 불러오기", "에러 : " + t.getMessage());
             }
-        });
+        });*/
     }
 
     private void displayMarkers(KakaoMap kakaoMap, List<LocationData> locationList) {
@@ -223,6 +248,26 @@ public class SpotFragment extends Fragment {
 
             // 마커 추가
             Label marker = markerLayer.addLabel(markerOptions);
+
+            kakaoMap.setOnLabelClickListener(new KakaoMap.OnLabelClickListener() {
+                @Override
+                public void onLabelClicked(KakaoMap kakaoMap, LabelLayer layer, Label label) {
+                    marker.setClickable(true);
+                    Toast.makeText(getContext(), "마커가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
+
+                    Log.d("SpotFragment", "이벤트 호출 시작");
+
+                    Intent intent = new Intent(getActivity(), LabelDBContext.class);
+
+                    try {
+                        startActivity(intent);
+                    }catch (Exception e){
+                            Log.e("SpotFragment", "실패: " + e.getMessage());
+                            e.printStackTrace();
+                    }
+
+                }
+            });
         }
     }
 

@@ -8,11 +8,14 @@ import com.example.spotapp.client.LocationData;
 
 import java.util.List;
 
+import okhttp3.MultipartBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.Part;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -25,8 +28,11 @@ public interface RetrofitService {
     @POST("/locations/save")
     Call<Void> addLocation(@Body LocationData locationData);
 
-    @GET("/locations") // 실제 API 엔드포인트에 따라 수정
+
+    @GET("/locations")
     Call<List<LocationData>> getLocations();
 
+    @GET("/locations/api")
+    Call<ApiResponse<List<LocationData>>> getLocations(@Query("latitude") Double latitude, @Query("longitude") Double longitude);
 
 }
