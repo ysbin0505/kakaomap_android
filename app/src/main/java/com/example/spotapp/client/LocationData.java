@@ -1,11 +1,44 @@
 package com.example.spotapp.client;
 
+import com.google.gson.annotations.SerializedName;
+
 public class LocationData {
+
+    @SerializedName("id")
+    private Long id;
+    @SerializedName("latitude")
     private Double latitude;
+
+    @SerializedName("longitude")
     private Double longitude;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @SerializedName("title")
     private String title;
+
+    @SerializedName("address")
     private String address;
+
+    @SerializedName("description")
     private String description;
+
+    @SerializedName("image")
+    private String image;
 
     public String getAddress() {
         return address;
@@ -15,12 +48,13 @@ public class LocationData {
         this.address = address;
     }
 
-    public LocationData(Double latitude, Double longitude, String title, String address, String description) {
+    public LocationData(Double latitude, Double longitude, String title, String address, String description, String image) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.title = title;
         this.address = address;
         this.description = description;
+        this.image = image;
     }
 
     public Double getLatitude() {

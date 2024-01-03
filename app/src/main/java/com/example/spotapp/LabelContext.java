@@ -2,9 +2,12 @@ package com.example.spotapp;
 
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,9 +39,14 @@ import com.kakao.vectormap.label.LabelOptions;
 import com.kakao.vectormap.label.LabelStyle;
 
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +56,7 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class LabelContext extends AppCompatActivity {
 
-    private static final String BASE_URL = "http://210.123.182.64:8080/";
+    private static final String BASE_URL = "http://192.168.239.152:8080/"; //210.123.182.64
     private RetrofitService retrofitService;
     private double latitude;
     private double longitude;
@@ -55,6 +65,12 @@ public class LabelContext extends AppCompatActivity {
     private ImageView profileImageView;
     private TextView writerTextView;
     private EditText contentTextView;
+
+    private Button imageUploadBtn;
+
+    private List<MultipartBody.Part> files;
+    private ActivityResultLauncher<Intent> startActivityResult;
+    private String uploadedImageFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +91,75 @@ public class LabelContext extends AppCompatActivity {
         writerTextView = findViewById(R.id.user_name);
         //dateTextView = findViewById(R.id.view_post_time);
         profileImageView = findViewById(R.id.imageView);
+        imageUploadBtn = findViewById(R.id.imageUploadBtn);
 
         kakaoProfile();
         redoButton();
+
+        //이미지 보내기
+        files = new ArrayList<>();
+        startActivityResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                Uri imageUri = result.getData().getData();
+                uploadImageToServer(imageUri);
+            }
+        });
+
+        uploadImageBtn();
         doneButton();
+    }
+
+    private void uploadImageBtn() {
+        imageUploadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Button imageSubmit = (Button) findViewById(R.id.imageUploadBtn);
+
+                imageSubmit.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        System.out.println("imageSubmit Click!");
+
+                        Intent intent = new Intent();
+                        intent.setType("image/*");
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        startActivityResult.launch(intent);
+                    }
+                });
+            }
+        });
+    }
+
+    public void uploadImageToServer(Uri imageUri) {
+        System.out.println("imageUri = " + imageUri);
+        System.out.println("getRealPathFromURI(imageUri) = " + getRealPathFromURI(imageUri));
+        File file = new File(getRealPathFromURI(imageUri));
+
+        // 파일이 존재하는지 확인
+        if (file.exists()) {
+            RequestBody requestBody = RequestBody.create(file, MediaType.parse("multipart/form-data"));
+            MultipartBody.Part part = MultipartBody.Part.createFormData("files", file.getName(), requestBody);
+            files = new ArrayList<>();
+            files.add(part);
+            Log.e("UploadImage", "File exist");
+
+            // 이미지 파일의 이름을 저장
+            uploadedImageFileName = file.getName();
+        } else {
+            // 파일이 존재하지 않을 경우 로그 또는 예외 처리
+            Log.e("UploadImage", "File does not exist");
+        }
+    }
+
+
+    // Uri에서 실제 파일 경로 가져오기
+    public String getRealPathFromURI(Uri contentUri) {
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+        cursor.moveToFirst();
+        return cursor.getString(column_index);
     }
 
     private void doneButton() {
@@ -98,13 +179,18 @@ public class LabelContext extends AppCompatActivity {
                 EditText contentEditText = findViewById(R.id.text);
                 String title = titleEditText.getText().toString();
                 String description = contentEditText.getText().toString();
+                String image = uploadedImageFileName;
                 String address = "null";
 
                 // LocationData 객체 생성
-                LocationData locationData = new LocationData(latitude, longitude, title, address, description);
+                LocationData locationData = new LocationData(latitude, longitude, title, address, description, image);
 
                 // Retrofit을 사용하여 서버로 POST 요청 보내기
                 Call<Void> call = retrofitService.addLocation(locationData);
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+
 
                 call.enqueue(new Callback<Void>() {
                     @Override
