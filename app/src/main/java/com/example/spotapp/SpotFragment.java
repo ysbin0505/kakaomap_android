@@ -2,11 +2,10 @@ package com.example.spotapp;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.PointF;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -54,6 +53,7 @@ public class SpotFragment extends Fragment {
     private static double longitude;
     private static double latitude;
     private static Label curLabel;
+    private static long locationId;
 
     public static double getLongitude() {
         return longitude;
@@ -69,6 +69,12 @@ public class SpotFragment extends Fragment {
 
     public static void setLatitude(double latitude) {
         SpotFragment.latitude = latitude;
+    }
+    public static long getLocationId(){
+        return locationId;
+    }
+    public static void setLocationId(long locationId){
+        SpotFragment.locationId = locationId;
     }
 
     public static Label getCurLabel() {
@@ -161,7 +167,7 @@ public class SpotFragment extends Fragment {
             @Override
             public int getZoomLevel() {
                 // 지도 시작 시 확대/축소 줌 레벨 설정
-                return 20;
+                return 15;
             }
         });
         // Inflate the layout for this fragment
@@ -178,9 +184,8 @@ public class SpotFragment extends Fragment {
                 .build();
         retrofitService = retrofit.create(RetrofitService.class);
 
-        //@@@@@@@@@@@
-        Call<ApiResponse<List<LocationData>>> calls = retrofitService.getLocations(latitude, longitude);
-        calls.enqueue(new Callback<ApiResponse<List<LocationData>>>() {
+        Call<ApiResponse<List<LocationData>>> call = retrofitService.getLocations(latitude, longitude);
+        call.enqueue(new Callback<ApiResponse<List<LocationData>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<LocationData>>> call, Response<ApiResponse<List<LocationData>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
@@ -201,8 +206,8 @@ public class SpotFragment extends Fragment {
             }
         });
 
-        //@@@@@@@@@@@
-        /*Call<List<LocationData>> call = retrofitService.getLocations();
+
+        /*Call<List<LocationData>> call = retrofitService.getAllLocations();
         call.enqueue(new Callback<List<LocationData>>() {
             @Override
             public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
@@ -235,13 +240,15 @@ public class SpotFragment extends Fragment {
             // 각 LocationData에서 위도와 경도를 가져와서 LatLng 객체 생성
             LatLng currentLocation = LatLng.from(location.getLatitude(), location.getLongitude());
 
+            locationId = location.getId();
+
             // 마커 스타일 설정
             LabelStyle markerStyle = LabelStyle.from(R.drawable.blue_marker)
                     .setTextStyles(15, Color.BLACK);
 
             // 마커 옵션 설정
             LabelOptions markerOptions = LabelOptions.from(currentLocation)
-                    .setStyles(markerStyle);
+                    .setStyles(markerStyle).setTag(locationId);
 
             // 마커 레이어 가져오기
             LabelLayer markerLayer = kakaoMap.getLabelManager().getLayer();
@@ -256,20 +263,25 @@ public class SpotFragment extends Fragment {
                     Toast.makeText(getContext(), "마커가 클릭되었습니다.", Toast.LENGTH_SHORT).show();
 
                     Log.d("SpotFragment", "이벤트 호출 시작");
+                    Log.d("SpotFragment", "Label clicked at latitude: " + label.getPosition().latitude + ", longitude: " + label.getPosition().longitude);
+
+                    long clickedLocationId = (long) label.getTag();
+                    Log.d("SpotFragment", "Label clicked with locationId: " + clickedLocationId);
 
                     Intent intent = new Intent(getActivity(), LabelDBContext.class);
+                    intent.putExtra("locationId", clickedLocationId);
 
                     try {
                         startActivity(intent);
-                    }catch (Exception e){
-                            Log.e("SpotFragment", "실패: " + e.getMessage());
-                            e.printStackTrace();
+                    } catch (Exception e) {
+                        Log.e("SpotFragment", "실패: " + e.getMessage());
+                        e.printStackTrace();
                     }
-
                 }
             });
         }
     }
+
 
 
     private void addMarkerToCurrentLocation(KakaoMap kakaoMap) {

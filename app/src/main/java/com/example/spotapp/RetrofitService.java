@@ -30,9 +30,12 @@ public interface RetrofitService {
 
 
     @GET("/locations")
-    Call<List<LocationData>> getLocations();
+    Call<List<LocationData>> getAllLocations();
 
     @GET("/locations/api")
     Call<ApiResponse<List<LocationData>>> getLocations(@Query("latitude") Double latitude, @Query("longitude") Double longitude);
+
+    @GET("/locations/{locationId}")
+    Call<LocationData> getLocationDetails(@Path("locationId") Long locationId);
 
 }
