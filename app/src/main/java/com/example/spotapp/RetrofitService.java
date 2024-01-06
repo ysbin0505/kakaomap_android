@@ -36,7 +36,8 @@ public interface RetrofitService {
 
     @GET("weather")
     Call<WeatherResponse> getWeather(
-            @Query("q") String city,
+            @Query("lat") Double latitude,
+            @Query("lon") Double longitude,
             @Query("appid") String apiKey
     );
 

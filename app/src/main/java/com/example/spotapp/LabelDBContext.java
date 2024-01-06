@@ -44,6 +44,9 @@ public class LabelDBContext extends AppCompatActivity {
     private TextView weatherInfo;
     private ImageView weatherIcon;
     private Integer iconResourceId;
+    private static double latitude;
+    private static double longitude;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,7 +80,8 @@ public class LabelDBContext extends AppCompatActivity {
                 .build();
         retrofitService = retrofit.create(RetrofitService.class);
 
-        Call<WeatherResponse> call = retrofitService.getWeather("Seoul", API_KEY);
+        Call<WeatherResponse> call = retrofitService.getWeather(latitude,longitude, API_KEY);
+        System.out.println("latitude = " + latitude + " longitude = " + longitude);
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
@@ -179,6 +183,9 @@ public class LabelDBContext extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     LocationData locationData = response.body();
                     updateUI(locationData);
+                    // 추가: 위치 데이터로부터 위도와 경도 값을 가져와 설정
+                    latitude = locationData.getLatitude();
+                    longitude = locationData.getLongitude();
                     Log.e("LabelDBContext", "Success to fetch location details");
                 } else {
                     Log.e("LabelDBContext", "Failed to fetch location details");
