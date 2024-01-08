@@ -99,7 +99,7 @@
                             android:layout_width="160dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center"
-                            android:scaleType="centerCrop"
+                            android:scaleType="fitXY"
                             android:visibility="visible" />
 
                         <LinearLayout
