@@ -136,7 +136,7 @@ public class LabelDBContext extends AppCompatActivity {
                 iconResourceId = rainnyResourceId;
                 break;
             case "13d":
-                iconResourceId = R.drawable.snowy;
+                iconResourceId = snowyResourceId;
                 break;
             default:
                 iconResourceId = defaultId;
